@@ -4,6 +4,3 @@ EXEC=./tp2
 
 $(EXEC): main.cpp
 	$(CC) $(CFLAGS) main.cpp -o $(EXEC)
-
-clean:
-	rm -rf 
