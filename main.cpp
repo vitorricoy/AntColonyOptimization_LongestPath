@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include <vector>
 #include <set>
 #include <fstream>
@@ -17,9 +18,7 @@ int BETA = 3;
 int ALFA = 1;
 double TAXA_EVAPORACAO = 0.05;
 
-const int SEED = 1;
-
-// n_ij = d_ij
+int SEED = 1;
 
 vector<vector<long long>> pesos;
 vector<vector<double>> feromonios;
@@ -34,7 +33,6 @@ int invalidos = 0;
 
 mt19937 origGen(SEED);
 
-// Testar resultados de criar nós com valor muito alto e de não adicionar novos nós
 void caminharFormiga()
 {
     vector<int> possiveisIniciais;
@@ -130,10 +128,11 @@ void caminharFormiga()
     }
 }
 
-void executarAlgoritmo(int iter)
+void executarAlgoritmo()
 {
+
     feromonios = vector<vector<double>>(nos, vector<double>(nos, FEROMONIO_INICIAL));
-    ofstream output("outputs/output_" + to_string(ALFA) + "_" + to_string(BETA) + "_" + to_string(iter) + ".txt");
+    ofstream output("outputs/output.txt");
     if (!output.is_open())
     {
         cout << "Erro ao abrir o arquivo de saída" << endl;
@@ -194,10 +193,23 @@ void executarAlgoritmo(int iter)
     output.close();
 }
 
-int main()
+int main(int argc, char **argv)
 {
-    string arquivo = "entrada3.txt";
-    nos = 1000;
+    if (argc != 9)
+    {
+        cout << "Uso correto do programa: './tp2 <num_formigas> <num_iter> <alfa> <beta> <taxa_evaporacao> <arquivo> <num_vertices> <seed>'" << endl;
+        return 0;
+    }
+
+    NUM_FORMIGAS = atoi(argv[1]);
+    NUM_ITER = atoi(argv[2]);
+    ALFA = atoi(argv[3]);
+    BETA = atoi(argv[4]);
+    TAXA_EVAPORACAO = atof(argv[5]);
+    string arquivo = string(argv[6]);
+    nos = atoi(argv[7]);
+    SEED = atoi(argv[8]);
+
     ifstream arq("dataset/" + arquivo);
     if (!arq.is_open())
     {
@@ -219,17 +231,7 @@ int main()
         pesos[vert1 - 1][vert2 - 1] = peso;
         listaAdj[vert1 - 1].push_back({vert2 - 1, peso});
     }
-    vector<pair<int, int>> valores = {{1, 1}, {1, 2}, {1, 3}, {2, 1}, {2, 2}, {2, 3}, {3, 1}, {3, 2}, {3, 3}};
-    for (pair<int, int> t : valores)
-    {
-        ALFA = t.first;
-        BETA = t.second;
-        cout << "ALFA = " << ALFA << ", BETA = " << BETA << endl;
-        for (int i = 0; i < 10; i++)
-        {
-            origGen = mt19937(i);
-            executarAlgoritmo(i);
-        }
-    }
     arq.close();
+    executarAlgoritmo();
+    return 0;
 }
